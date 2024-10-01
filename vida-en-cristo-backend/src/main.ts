@@ -13,6 +13,6 @@ async function bootstrap() {
   app.enableCors();
   await app.listen(port);
   const logger = new Logger('bootstrap');
-  logger.log(`Application listening on port ${port}`);
+  logger.log(`Applicacion corriendo en el puerto: ${port}`);
 }
 bootstrap();
