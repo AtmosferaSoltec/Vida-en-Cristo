@@ -1,0 +1,40 @@
+<nav
+  [ngClass]="{ 'md:w-[60px]': !isOpen() }"
+  class="w-full md:w-[300px] md:h-screen bg-colorP1 transition-all ease-in-out"
+>
+  <div
+    [ngClass]="{ 'md:justify-center': !isOpen() }"
+    class="flex items-center justify-between p-2"
+  >
+    <div
+      [ngClass]="{ 'md:hidden': !isOpen() }"
+      class="flex flex-col text-white"
+    >
+      <img src="assets/images/logo_full.png" alt="Logo" />
+    </div>
+
+    <button mat-icon-button (click)="toggle()">
+      <mat-icon class="text-white" [matTooltip]="isOpen() ? 'Cerrar' : 'Menu'">
+        @if (isOpen()) { close } @else { menu }
+      </mat-icon>
+    </button>
+  </div>
+  <ul
+    [ngClass]="{ 'hidden md:flex': !isOpen() }"
+    class="flex flex-col gap-2 p-2"
+  >
+    @for (item of listMenu; track $index) {
+    <li>
+      <a
+        [routerLink]="item.link"
+        routerLinkActive="bg-white text-colorP1"
+        [matTooltip]="isOpen() ? '' : item.name"
+        class="flex items-center gap-2 p-2 text-white rounded-lg cursor-pointer select-none hover:bg-white hover:text-colorP1"
+      >
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span [ngClass]="{ 'md:hidden': !isOpen() }">{{ item.name }}</span>
+      </a>
+    </li>
+    }
+  </ul>
+</nav>

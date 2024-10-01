@@ -1,0 +1,49 @@
+<input type="file" (change)="onChange($event)">
+<div class="mat-elevation-z8">
+  <table mat-table matSort [dataSource]="listMiembros">
+
+    <ng-container matColumnDef="dni">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>Documento</th>
+      <td mat-cell *matCellDef="let element">{{ element.dni }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="nombres">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>Nombres</th>
+      <td mat-cell *matCellDef="let element">{{ element.nombres }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="apellidos">
+      <th mat-header-cell *matHeaderCellDef>Apellidos</th>
+      <td mat-cell *matCellDef="let element">{{ element.apellidos }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="celular">
+      <th mat-header-cell *matHeaderCellDef>Celular</th>
+      <td mat-cell *matCellDef="let element">{{ element.celular }}</td>
+    </ng-container>
+    <ng-container matColumnDef="direc">
+      <th mat-header-cell *matHeaderCellDef>Dirección</th>
+      <td mat-cell *matCellDef="let element">{{ element.direc }}</td>
+    </ng-container>
+    <ng-container matColumnDef="distrito">
+      <th mat-header-cell *matHeaderCellDef>Distrito</th>
+      <td mat-cell *matCellDef="let element">{{ element.distrito }}</td>
+    </ng-container>
+    <ng-container matColumnDef="fecha_nac">
+      <th mat-header-cell *matHeaderCellDef>Fecha de Nacimiento</th>
+      <td mat-cell *matCellDef="let element">{{ element.fecha_nac | date: 'dd/MM/yyyy' }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <mat-paginator
+    [pageSizeOptions]="[5, 10, 20]"
+    showFirstLastButtons
+    aria-label="Select page of periodic elements"
+  >
+  </mat-paginator>
+</div>
+
+<button (click)="send()">Enviar</button>
