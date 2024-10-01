@@ -1,5 +1,6 @@
 import { Distrito } from 'src/modules/distrito/entities/distrito.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Familia } from '../../familia/entities/familia.entity';
 
 @Entity({ name: 'miembro' })
 export class Miembro {
@@ -67,4 +68,10 @@ export class Miembro {
     cascade: true,
   })
   distrito: Distrito;
+
+  @ManyToOne(
+    () => Familia,
+    f => f.miembros
+  )
+  familia: Familia;
 }

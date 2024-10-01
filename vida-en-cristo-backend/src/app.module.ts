@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsuarioModule } from './modules/usuario/usuario.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DistritoModule } from './modules/distrito/distrito.module';
+import { FamiliaModule } from './modules/familia/familia.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { DistritoModule } from './modules/distrito/distrito.module';
     UsuarioModule,
     AuthModule,
     DistritoModule,
+    FamiliaModule,
   ],
   controllers: [],
   providers: [],
