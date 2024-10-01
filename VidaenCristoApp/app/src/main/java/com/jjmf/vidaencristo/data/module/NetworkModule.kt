@@ -1,6 +1,7 @@
 package com.jjmf.vidaencristo.data.module
 
 import com.jjmf.vidaencristo.data.service.DistritoService
+import com.jjmf.vidaencristo.data.service.FamiliaService
 import com.jjmf.vidaencristo.data.service.MiembroService
 import com.jjmf.vidaencristo.util.Constants
 import dagger.Module
@@ -50,6 +51,12 @@ object NetworkModule {
     @Provides
     fun provideDistritoService(r: Retrofit): DistritoService {
         return r.create(DistritoService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideFamiliaService(r: Retrofit): FamiliaService {
+        return r.create(FamiliaService::class.java)
     }
 
 }

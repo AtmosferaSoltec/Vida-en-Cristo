@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -67,7 +69,6 @@ fun MiembrosScreen(
     viewModel: MiembroViewModel = hiltViewModel()
 ) {
 
-
     LaunchedEffect(Unit) {
         viewModel.getMiembros()
     }
@@ -85,7 +86,8 @@ fun MiembrosScreen(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
-                }
+                },
+                        windowInsets = WindowInsets.ime
             )
         },
         floatingActionButton = {
@@ -115,14 +117,25 @@ fun MiembrosScreen(
                                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                                 contentPadding = PaddingValues(horizontal = 16.dp)
                             ) {
-                                items(Meses.entries) {
+                                item {
                                     ElevatedFilterChip(
-                                        selected = true,
+                                        selected = mesSelected.value == null,
                                         onClick = {
-                                            mesSelected.value = it
+                                            mesSelected.value = null
                                         },
                                         label = {
-                                            Text(it.name)
+                                            Text("Todos")
+                                        }
+                                    )
+                                }
+                                items(Meses.entries) {mes ->
+                                    ElevatedFilterChip(
+                                        selected = mesSelected.value == mes,
+                                        onClick = {
+                                            mesSelected.value = mes
+                                        },
+                                        label = {
+                                            Text(mes.name)
                                         }
                                     )
                                 }

@@ -57,7 +57,11 @@ fun MainNavigation(modifier: Modifier) {
         composable(
             route = Rutas.AddMiembro.route
         ){
-            AddMiembroScreen()
+            AddMiembroScreen(
+                back = {
+                    nav.popBackStack()
+                }
+            )
         }
 
         composable(

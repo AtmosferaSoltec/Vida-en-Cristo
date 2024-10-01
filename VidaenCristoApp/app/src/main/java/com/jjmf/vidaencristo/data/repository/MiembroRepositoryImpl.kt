@@ -1,6 +1,9 @@
 package com.jjmf.vidaencristo.data.repository
 
+import android.util.Log
+import com.google.gson.Gson
 import com.jjmf.vidaencristo.data.service.MiembroService
+import com.jjmf.vidaencristo.data.service.requests.MiembroRequest
 import com.jjmf.vidaencristo.domain.model.Miembro
 import com.jjmf.vidaencristo.domain.repository.MiembroRepository
 import javax.inject.Inject
@@ -33,4 +36,35 @@ class MiembroRepositoryImpl @Inject constructor(
             throw e
         }
     }
+
+    override suspend fun insert(request: MiembroRequest) {
+        try {
+            val call = api.insert(request)
+            if (call.isSuccessful) {
+                return
+            } else {
+                val errorBody = call.errorBody()?.string()
+                if (errorBody != null) {
+                    val errorResponse = try {
+                        Gson().fromJson(errorBody, ErrorResponse::class.java)
+                    } catch (e: Exception) {
+                        null
+                    }
+                    if (errorResponse != null) {
+                        throw Exception(errorResponse.message)
+                    } else {
+                        throw Exception("Error al insertar el miembro")
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            throw e
+        }
+    }
 }
+
+data class ErrorResponse(
+    val message: String,
+    val error: String,
+    val statusCode: Int
+)

@@ -5,93 +5,52 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DisplayMode
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.jjmf.vidaencristo.ui.components.CajaFecha
+import com.jjmf.vidaencristo.ui.components.CajaSelect
 import com.jjmf.vidaencristo.ui.components.CajaText
+import com.jjmf.vidaencristo.ui.events.AddMiembroEvent
 import com.jjmf.vidaencristo.ui.viewmodels.DistritoViewModel
 import com.jjmf.vidaencristo.ui.viewmodels.MiembroViewModel
-import com.jjmf.vidaencristo.util.format
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMiembroScreen(
+    back: () -> Unit,
     viewModel: MiembroViewModel = hiltViewModel(),
     distritoViewModel: DistritoViewModel = hiltViewModel()
 ) {
-    val distrito = remember { mutableStateOf("") }
-    val isVisible = remember { mutableStateOf(false) }
 
-    val alertFecha = remember { mutableStateOf(false) }
-    val fecha = rememberDatePickerState(initialDisplayMode = DisplayMode.Picker)
+    val state = viewModel.addMiembroState
 
     LaunchedEffect(key1 = Unit) {
         distritoViewModel.getAll()
     }
 
-    if (alertFecha.value) {
-        DatePickerDialog(
-            onDismissRequest = {
-                alertFecha.value = false
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        val selectedDateMillis = fecha.selectedDateMillis
-                        if (selectedDateMillis != null) {
-                            val calendar = Calendar.getInstance().apply {
-                                timeInMillis = selectedDateMillis
-                            }
-                            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                            val formattedDate = dateFormat.format(calendar.time)
-                            println("Fecha seleccionada: $formattedDate")
-                        }
-                        alertFecha.value = false
-                    }
-                ) {
-                    Text("Aceptar")
-                }
-            },
-        ) {
-            DatePicker(
-                state = fecha,
-                title = null,
-                showModeToggle = false,
-                headline = null
-            )
+    if (viewModel.back) {
+        LaunchedEffect(Unit) {
+            viewModel.back = false
+            back()
         }
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
@@ -100,90 +59,73 @@ fun AddMiembroScreen(
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold
         )
-        Text(text = Date(fecha.displayedMonthMillis).format("dd/MM/yyyy") ?: "Sin Fecha")
+
         CajaText(
-            value = "",
-            newValue = {},
+            value = state.dni,
+            newValue = {
+                viewModel.setEvent(AddMiembroEvent.SetDni(it))
+            },
             label = "DNI",
-            keyboardType = KeyboardType.Number
+            keyboardType = KeyboardType.Number,
+            max = 8
         )
         CajaText(
-            value = "",
-            newValue = {},
+            value = state.nombres,
+            newValue = {
+                viewModel.setEvent(AddMiembroEvent.SetNombres(it))
+            },
             label = "Nombres"
         )
         CajaText(
-            value = "",
-            newValue = {},
+            value = state.apellidos,
+            newValue = {
+                viewModel.setEvent(AddMiembroEvent.SetApellidos(it))
+            },
             label = "Apellidos"
         )
         CajaText(
-            value = "",
-            newValue = {},
+            value = state.celular,
+            newValue = {
+                viewModel.setEvent(AddMiembroEvent.SetCelular(it))
+            },
             label = "Celular",
             keyboardType = KeyboardType.Number
         )
-        Column {
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = distrito.value,
-                onValueChange = {},
-                readOnly = true,
-                label = {
-                    Text("Distrito")
-                },
-                trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            isVisible.value = true
-                        }
-                    ) {
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                    }
-                }
-            )
-            DropdownMenu(
-                expanded = isVisible.value,
-                onDismissRequest = {
-                    isVisible.value = false
-                }
-            ) {
-                distritoViewModel.list.forEach {
-                    DropdownMenuItem(
-                        text = {
-                            Text(it.nombre)
-                        },
-                        onClick = {
-                            distrito.value = it.nombre
-                            isVisible.value = false
-                        }
-                    )
-                }
+        CajaSelect(
+            value = state.distrito,
+            newValue = { distrito ->
+                viewModel.setEvent(AddMiembroEvent.SetDistrito(distrito))
+            },
+            label = "Distrito",
+            list = distritoViewModel.list,
+            displayMapper = {
+                it.nombre
             }
-        }
+        )
         CajaText(
-            value = "",
-            newValue = {},
+            value = state.direc,
+            newValue = {
+                viewModel.setEvent(AddMiembroEvent.SetDirec(it))
+            },
             label = "Dirección"
         )
-        OutlinedTextField(
+
+        CajaFecha(
             modifier = Modifier.fillMaxWidth(),
-            value = "",
-            onValueChange = {},
-            readOnly = true,
-            label = {
-                Text("Fecha de Nacimiento")
+            value = state.fechaNac,
+            newValue = { newFecha ->
+                viewModel.setEvent(AddMiembroEvent.SetFechaNac(newFecha))
             },
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        alertFecha.value = true
-                    }
-                ) {
-                    Icon(Icons.Default.CalendarMonth, contentDescription = null)
-                }
-            }
+            label = "Fecha de Nacimiento"
         )
+
+        Button(
+            onClick = {
+                viewModel.add()
+            }
+        ) {
+            Text("Guardar")
+        }
     }
 
 }

@@ -6,6 +6,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 
 @Composable
@@ -14,18 +15,26 @@ fun CajaText(
     value: String,
     newValue: (String) -> Unit,
     label: String? = null,
-    keyboardType: KeyboardType = KeyboardType.Text
+    max: Int = 100,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    capitalization: KeyboardCapitalization = KeyboardCapitalization.Words
 ) {
 
     OutlinedTextField(
         modifier = modifier.fillMaxWidth(),
         value = value,
-        onValueChange = newValue,
+        onValueChange = {
+            if (it.length <= max) {
+                newValue(it)
+            }
+        },
         label = if (label != null) {
             { Text(label) }
         } else null,
         keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType
-        )
+            keyboardType = keyboardType,
+            capitalization = capitalization
+        ),
+        singleLine = true
     )
 }
